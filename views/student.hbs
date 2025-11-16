@@ -1,0 +1,22 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="/" class="text-decoration-none">&larr; Back to list</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h1 class="h4 mb-3">Student #{{student.StudentID}} — {{student.FirstName}} {{student.LastName}}</h1>
+        <dl class="row">
+            <dt class="col-sm-3">First Name</dt>
+            <dd class="col-sm-9">{{student.FirstName}}</dd>
+
+            <dt class="col-sm-3">Last Name</dt>
+            <dd class="col-sm-9">{{student.LastName}}</dd>
+
+            <dt class="col-sm-3">Major</dt>
+            <dd class="col-sm-9">{{student.Major}}</dd>
+
+            <dt class="col-sm-3">GPA</dt>
+            <dd class="col-sm-9">{{student.GPA}}</dd>
+        </dl>
+    </div>
+</div>
