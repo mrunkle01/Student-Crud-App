@@ -2,7 +2,13 @@ const Students = require('../models/studentModel');
 
 exports.list = async (req, res, next) => {
     try {
-        const students = await Students.findAll();
+        const q = req.query.q;
+
+        const students = await Students.findAll({ q });
+        if (students.length === 0) {
+            res.render('notFound', {title: "No students found"});
+            return;
+        }
         res.render('students', {title: 'Student Database', students});
     } catch (err) {
         next(err);
@@ -23,7 +29,7 @@ exports.newForm = (req, res, next) => {
         title: 'Add Student',
         mode: 'create',
         student: {StudentID: '', FirstName: '', LastName: '', Major: '', GPA: ''},
-        action: '/student?_method=POST',
+        action: '/students?_method=POST',
         submitLabel: 'Create',
     });
 }
@@ -31,13 +37,13 @@ exports.newForm = (req, res, next) => {
 exports.create = async (req, res, next) => {
     try {
         const errors = validate(req.body);
-        const {FirstName, LastName, Major, GPA} = req.body;
+        const {FirstName, LastName, Major, GPA} = scrub(req.body);
         if (Object.keys(errors).length > 0) {
             return res.status(400).render('studentForm', {
                 title: 'Add Student',
                 mode: 'create',
                 student: {FirstName, LastName, Major, GPA},
-                action: '/student?_method=POST',
+                action: '/students?_method=POST',
                 submitLabel: 'Create',
                 errors
             });
@@ -121,10 +127,14 @@ const validate = ({FirstName, LastName, Major, GPA}) => {
     const errors = {}
     if (!FirstName || !FirstName.trim() || !String(FirstName)) errors.firstName = 'First Name is required.';
     if (!LastName || !LastName.trim() || !String(LastName)) errors.lastName = 'Last Name is required.';
-    if (!Major || !Major.trim() || !String(Major)) errors.major = 'Major is required.';
-    if (!GPA || !GPA.trim()
-        || Number.isNaN(GPA) || Number(GPA) > 5.0 || Number(GPA) < 0) {
-        errors.gpa = 'GPA needs to be a valid number between 0 and 5.0';
+    if (Major && Major.trim() && Major.trim().length > 20) {
+        errors.major = 'Major must be 20 characters or less.';
+    }
+    if (GPA && GPA.trim()) {
+        const gpaNum = Number(GPA);
+        if (isNaN(gpaNum) || gpaNum < 0 || gpaNum > 5.0) {
+            errors.gpa = 'GPA must be a number between 0.00 and 5.00.';
+        }
     }
 
     return errors;
