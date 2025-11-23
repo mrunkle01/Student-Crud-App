@@ -1,15 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const morgan = require('morgan');
 const methodOverride = require('method-override');
 const { engine } = require('express-handlebars');
 
 const app = express();
-
-if (process.env.NODE_ENV !== 'production') {
-    app.use(morgan('dev'));
-}
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
